@@ -136,8 +136,7 @@ Thermostat.prototype = {
 	getTargetTemperature: function(callback) {
 		this.log("getTargetTemperature Started ---");
 		request.get({
-			url: this.service_url+"/ac/status",
-			auth : this.auth
+			url: this.service_url+"/ac/status"
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
@@ -154,8 +153,7 @@ Thermostat.prototype = {
 	setTargetTemperature: function(value, callback) {
 		this.log("setTargetTemperature to "+value);
 		request.get({
-			url: this.service_url+"/ac/targetTemperature?set="+value,
-			auth : this.auth
+			url: this.service_url+"/ac/targetTemperature?set="+value
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
