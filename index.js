@@ -4,7 +4,7 @@ var request = require("request");
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("ac-homebridge", "AC", Thermostat);
+  homebridge.registerAccessory("homebridge-ac", "AC", Thermostat);
 };
 
 
