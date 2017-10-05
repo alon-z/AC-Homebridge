@@ -4,39 +4,28 @@ var request = require("request");
 module.exports = function(homebridge){
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  homebridge.registerAccessory("homebridge-thermostat", "Thermostat", Thermostat);
+  homebridge.registerAccessory("ac-homebridge", "AC", Thermostat);
 };
 
 
 function Thermostat(log, config) {
 	this.log = log;
-	this.maxTemp = config.maxTemp || 25;
-	this.minTemp = config.minTemp || 15;
-	this.name = config.name;
-	this.apiroute = config.apiroute || "apiroute";
-	this.log(this.name, this.apiroute);
-	this.username = config.username || null;
-	this.password = config.password || null;
-	
-	if(this.username != null && this.password != null){
-		this.auth = {
-			user : this.username,
-			pass : this.password
-		};
-	}
+	this.maxTemp = config.maxTemp || 30;
+	this.minTemp = config.minTemp || 20;
+    this.name = config.name;
+    this.service_url = config.service_url;
+	this.log("Started AC: " + this.name);
 
 	//Characteristic.TemperatureDisplayUnits.CELSIUS = 0;
 	//Characteristic.TemperatureDisplayUnits.FAHRENHEIT = 1;
 	this.temperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS;
-	this.currentTemperature = 19;
-	this.currentRelativeHumidity = 0.70;
+	this.currentTemperature = 20;
 	// The value property of CurrentHeatingCoolingState must be one of the following:
 	//Characteristic.CurrentHeatingCoolingState.OFF = 0;
 	//Characteristic.CurrentHeatingCoolingState.HEAT = 1;
 	//Characteristic.CurrentHeatingCoolingState.COOL = 2;
 	this.heatingCoolingState = Characteristic.CurrentHeatingCoolingState.AUTO;
 	this.targetTemperature = 21;
-	this.targetRelativeHumidity = 0.5;
 	this.heatingThresholdTemperature = 25;
 	this.coolingThresholdTemperature = 5;
 	// The value property of TargetHeatingCoolingState must be one of the following:
@@ -58,10 +47,9 @@ Thermostat.prototype = {
 	},
 	// Required
 	getCurrentHeatingCoolingState: function(callback) {
-		this.log("getCurrentHeatingCoolingState from:", this.apiroute+"/status");
+		this.log("getCurrentHeatingCoolingState Started ----");
 		request.get({
-			url: this.apiroute+"/status",
-			auth : this.auth
+			url: this.service_url+"/ac/status"
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
@@ -78,10 +66,9 @@ Thermostat.prototype = {
 		}.bind(this));
 	},
 	getTargetHeatingCoolingState: function(callback) {
-		this.log("getTargetHeatingCoolingState from:", this.apiroute+"/status");
+		this.log("getTargetHeatingCoolingState Started ----");
 		request.get({
-			url: this.apiroute+"/status",
-			auth : this.auth
+			url: this.service_url+"/ac/status"
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
@@ -105,8 +92,7 @@ Thermostat.prototype = {
 			this.log("setTargetHeatingCoolingState from/to:", this.targetHeatingCoolingState, value);
 			
 			request.get({
-				url: this.apiroute + '/targetHeatingCoolingState/' + value,
-				auth : this.auth
+				url: this.service_url + '/ac/targetHeatingCoolingState/' + value
 			}, function(err, response, body) {
 				if (!err && response.statusCode == 200) {
 					this.log("response success");
@@ -121,10 +107,9 @@ Thermostat.prototype = {
 		}
 	},
 	getCurrentTemperature: function(callback) {
-		this.log("getCurrentTemperature from:", this.apiroute+"/status");
+		this.log("getCurrentTemperature Started ---");
 		request.get({
-			url: this.apiroute+"/status",
-			auth : this.auth
+			url: this.service_url+"/ac/status"
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
@@ -149,9 +134,9 @@ Thermostat.prototype = {
 		}.bind(this));
 	},
 	getTargetTemperature: function(callback) {
-		this.log("getTargetTemperature from:", this.apiroute+"/status");
+		this.log("getTargetTemperature Started ---");
 		request.get({
-			url: this.apiroute+"/status",
+			url: this.service_url+"/ac/status",
 			auth : this.auth
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
@@ -167,9 +152,9 @@ Thermostat.prototype = {
 		}.bind(this));
 	},
 	setTargetTemperature: function(value, callback) {
-		this.log("setTargetTemperature from:", this.apiroute+"/targetTemperature/"+value);
+		this.log("setTargetTemperature to "+value);
 		request.get({
-			url: this.apiroute+"/targetTemperature/"+value,
+			url: this.service_url+"/ac/targetTemperature/"+value,
 			auth : this.auth
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
@@ -186,54 +171,13 @@ Thermostat.prototype = {
 		var error = null;
 		callback(error, this.temperatureDisplayUnits);
 	},
-	setTemperatureDisplayUnits: function(value, callback) {
-		this.log("setTemperatureDisplayUnits from %s to %s", this.temperatureDisplayUnits, value);
-		this.temperatureDisplayUnits = value;
-		var error = null;
-		callback(error);
-	},
+	//setTemperatureDisplayUnits: function(value, callback) {
+	//	this.log("setTemperatureDisplayUnits from %s to %s", this.temperatureDisplayUnits, value);
+	//	this.temperatureDisplayUnits = value;
+	//	var error = null;
+	//	callback(error);
+	//},
 
-	// Optional
-	getCurrentRelativeHumidity: function(callback) {
-		this.log("getCurrentRelativeHumidity from:", this.apiroute+"/status");
-		request.get({
-			url: this.apiroute+"/status",
-			auth : this.auth
-		}, function(err, response, body) {
-			if (!err && response.statusCode == 200) {
-				this.log("response success");
-				var json = JSON.parse(body); //{"state":"OFF","targetStateCode":5,"temperature":"18.10","humidity":"34.10"}
-				
-				if (json.currentRelativeHumidity != undefined)
-                                {
-                                  this.log("Humidity state is %s", json.currentRelativeHumidity);
-                                  this.currentRelativeHumidity = parseFloat(json.currentRelativeHumidity);
-                                }
-                                else
-                                {
-                                  this.log("Humidity %s", json.humidity);
-                                  this.currentRelativeHumidity = parseFloat(json.humidity);
-                                }
-
-				callback(null, this.currentRelativeHumidity); // success
-			} else {
-				this.log("Error getting state: %s", err);
-				callback(err);
-			}
-		}.bind(this));
-	},
-	getTargetRelativeHumidity: function(callback) {
-		this.log("getTargetRelativeHumidity:", this.targetRelativeHumidity);
-		var error = null;
-		callback(error, this.targetRelativeHumidity);
-	},
-	setTargetRelativeHumidity: function(value, callback) {
-		this.log("setTargetRelativeHumidity from/to :", this.targetRelativeHumidity, value);
-		this.log("setTargetRelativeHumidity not implemented with API");
-		this.targetRelativeHumidity = value;
-		var error = null;
-		callback(error);
-	},
 /*	getCoolingThresholdTemperature: function(callback) {
 		this.log("getCoolingThresholdTemperature: ", this.coolingThresholdTemperature);
 		var error = null;
@@ -257,9 +201,9 @@ Thermostat.prototype = {
 		var informationService = new Service.AccessoryInformation();
 
 		informationService
-			.setCharacteristic(Characteristic.Manufacturer, "HTTP Manufacturer")
-			.setCharacteristic(Characteristic.Model, "HTTP Model")
-			.setCharacteristic(Characteristic.SerialNumber, "HTTP Serial Number");
+			.setCharacteristic(Characteristic.Manufacturer, "AC Manufacturer")
+			.setCharacteristic(Characteristic.Model, "AC Model")
+			.setCharacteristic(Characteristic.SerialNumber, "AC Serial Number");
 
 		
 
@@ -284,18 +228,10 @@ Thermostat.prototype = {
 
 		this.service
 			.getCharacteristic(Characteristic.TemperatureDisplayUnits)
-			.on('get', this.getTemperatureDisplayUnits.bind(this))
-			.on('set', this.setTemperatureDisplayUnits.bind(this));
+			.on('get', this.getTemperatureDisplayUnits.bind(this));
+		//	.on('set', this.setTemperatureDisplayUnits.bind(this));
 
 		// Optional Characteristics
-		this.service
-			.getCharacteristic(Characteristic.CurrentRelativeHumidity)
-			.on('get', this.getCurrentRelativeHumidity.bind(this));
-
-		this.service
-			.getCharacteristic(Characteristic.TargetRelativeHumidity)
-			.on('get', this.getTargetRelativeHumidity.bind(this))
-			.on('set', this.setTargetRelativeHumidity.bind(this));
 		/*
 		this.service
 			.getCharacteristic(Characteristic.CoolingThresholdTemperature)
