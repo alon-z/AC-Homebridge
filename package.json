@@ -1,0 +1,11 @@
+{
+  "name": "ac-homebridge",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "homebridge -D -U ~/.homebridge-dev -P ~/Projects/ac-homebridge/"
+  },
+  "author": "",
+  "license": "ISC"
+}
