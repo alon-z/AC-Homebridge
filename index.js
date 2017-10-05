@@ -53,7 +53,7 @@ Thermostat.prototype = {
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
-				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"targetTemperature":10,"temperature":12,"humidity":98}
+				var json = JSON.parse(body);
 				this.log("currentHeatingCoolingState is %s", json.currentHeatingCoolingState);
 				this.currentHeatingCoolingState = json.currentHeatingCoolingState;
 				this.service.setCharacteristic(Characteristic.CurrentHeatingCoolingState, this.currentHeatingCoolingState);
@@ -72,7 +72,7 @@ Thermostat.prototype = {
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
-				var json = JSON.parse(body); //{"targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"targetTemperature":10,"temperature":12,"humidity":98}
+				var json = JSON.parse(body);
 				this.log("TargetHeatingCoolingState received is %s", json.targetHeatingCoolingState, json.targetStateCode);
 				this.targetHeatingCoolingState = json.targetHeatingCoolingState !== undefined? json.targetHeatingCoolingState : json.targetStateCode;
 				this.log("TargetHeatingCoolingState is now %s", this.targetHeatingCoolingState);
@@ -92,7 +92,7 @@ Thermostat.prototype = {
 			this.log("setTargetHeatingCoolingState from/to:", this.targetHeatingCoolingState, value);
 			
 			request.get({
-				url: this.service_url + '/ac/targetHeatingCoolingState/' + value
+				url: this.service_url+'/ac/targetHeatingCoolingState/' + value
 			}, function(err, response, body) {
 				if (!err && response.statusCode == 200) {
 					this.log("response success");
@@ -113,7 +113,7 @@ Thermostat.prototype = {
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
-				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0,"temperature":"18.10","humidity":"34.10"}
+				var json = JSON.parse(body);
 
 				if (json.currentTemperature != undefined)
                                 {
@@ -141,7 +141,7 @@ Thermostat.prototype = {
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
 				this.log("response success");
-				var json = JSON.parse(body); //{targetHeatingCoolingState":3,"currentHeatingCoolingState":0"temperature":"18.10","humidity":"34.10"}
+				var json = JSON.parse(body);
 				this.targetTemperature = parseFloat(json.targetTemperature);
 				this.log("Target temperature is %s", this.targetTemperature);
 				callback(null, this.targetTemperature); // success
@@ -154,7 +154,7 @@ Thermostat.prototype = {
 	setTargetTemperature: function(value, callback) {
 		this.log("setTargetTemperature to "+value);
 		request.get({
-			url: this.service_url+"/ac/targetTemperature/"+value,
+			url: this.service_url+"/ac/targetTemperature?set="+value,
 			auth : this.auth
 		}, function(err, response, body) {
 			if (!err && response.statusCode == 200) {
