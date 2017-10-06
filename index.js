@@ -90,7 +90,7 @@ Thermostat.prototype = {
 			callback(); //Some stuff call this without value doing shit with the rest
 		} else {
 			this.log("setTargetHeatingCoolingState from/to:", this.targetHeatingCoolingState, value);
-			
+			this.log("URL: " + this.service_url+"/ac/targetHeatingCoolingState/?set="+value);
 			request.get({
 				url: this.service_url+"/ac/targetHeatingCoolingState/?set="+value
 			}, function(err, response, body) {
