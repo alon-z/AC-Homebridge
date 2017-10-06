@@ -92,7 +92,7 @@ Thermostat.prototype = {
 			this.log("setTargetHeatingCoolingState from/to:", this.targetHeatingCoolingState, value);
 			this.log("URL: " + this.service_url+"/ac/targetHeatingCoolingState?set="+value);
 			request.get({
-				url: this.service_url+"/ac/targetHeatingCoolingState/?set="+value
+				url: this.service_url+"/ac/targetHeatingCoolingState?set="+value
 			}, function(err, response, body) {
 				if (!err && response.statusCode == 200) {
 					this.log("response success");
