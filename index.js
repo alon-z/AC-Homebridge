@@ -12,11 +12,10 @@ function Thermostat(log, config) {
 	this.log = log;
 	this.maxTemp = config.maxTemp || 30;
 	this.minTemp = config.minTemp || 20;
-    this.name = config.name;
-    this.service_url = config.service_url;
+	this.name = config.name;
+    	this.service_url = config.service_url;
 	this.log("Started AC: " + this.name);
 
-	//Characteristic.TemperatureDisplayUnits.CELSIUS = 0;
 	//Characteristic.TemperatureDisplayUnits.FAHRENHEIT = 1;
 	this.temperatureDisplayUnits = Characteristic.TemperatureDisplayUnits.CELSIUS;
 	this.currentTemperature = 20;
